@@ -6,6 +6,9 @@
     "maxFiles": 4,
     "logzio": {
       "enabled": true
+    },
+    "centry": {
+      "enabled": true
     }
   },
   "consensus": {
