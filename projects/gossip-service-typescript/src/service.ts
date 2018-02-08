@@ -13,7 +13,7 @@ export default class GossipService {
 
   @bind
   public async getHeartbeat(rpc: types.GetHeartbeatContext) {
-    logger.debug(`${topology.name}: service '${rpc.req.requesterName}(v${rpc.req.requesterVersion})' asked for heartbeat`);
+    logger.debug("Service asked for heartbeat", {request: {node_name: rpc.req.requesterName, version: rpc.req.requesterVersion}});
     rpc.res = { responderName: topology.name, responderVersion: topology.version };
   }
 
@@ -35,7 +35,7 @@ export default class GossipService {
 
   async askForHeartbeat(peer: types.HeardbeatClient) {
     const res = await peer.getHeartbeat({ requesterName: topology.name, requesterVersion: topology.version });
-    logger.debug(`${topology.name}: received heartbeat from '${res.responderName}(v${res.responderVersion})'`);
+    logger.debug("Service received heartbeat", {response: {node_name: res.responderName, version: res.responderVersion}});
   }
 
   askForHeartbeats() {

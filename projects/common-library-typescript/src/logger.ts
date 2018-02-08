@@ -45,6 +45,7 @@ export class Logger {
       level: opts.level,
       transports: [
         new winston.transports.File({
+          level: opts.level,
           filename: Logger.resolvePath(opts.fileName),
           maxsize: opts.maxSize,
           maxFiles: opts.maxFiles,
