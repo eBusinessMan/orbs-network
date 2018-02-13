@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+service Management {
+  rpc IsAlive (IsAliveInput) returns (IsAliveOutput);
+}
+
+message IsAliveInput {
+
+}
+
+message IsAliveOutput {
+  bool alive = 1;
+}
