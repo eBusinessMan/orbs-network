@@ -6,3 +6,4 @@ export * from "./topology";
 export * from "./topologyPeers";
 export * from "./types";
 export * from "./grpc-server";
+export * from "./management";

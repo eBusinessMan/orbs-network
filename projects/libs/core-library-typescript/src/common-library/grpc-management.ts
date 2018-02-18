@@ -22,7 +22,7 @@ const mgmtName = "Management";
 const mgmtProtoPath = path.resolve(PROTO_PATH, "management.proto");
 
 function addManagementService(app: Mali, management: ManagementService) {
-  const rpcService = new ManagementRPCService(management);
+  const rpcService = <any> new ManagementRPCService(management);
   app.addService(mgmtProtoPath, mgmtName);
   const methods: {[key: string]: Function} = {};
   types.Management.forEach(method => methods[method] = rpcService[method].bind(rpcService));
