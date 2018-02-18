@@ -1,15 +1,14 @@
-import { ErrorHandler, grpc, ServiceRunner } from "orbs-core-library";
+import { ErrorHandler, grpcServer, topology, AlwaysAliveManagementService } from "orbs-core-library";
 
 import BlockStorageService from "./block-storage-service";
 import StateStorageService from "./state-storage-service";
 
 ErrorHandler.setup();
 
-const main = async () => {
-  await ServiceRunner.runMulti(grpc.storageServiceServer, [
-    new BlockStorageService(),
-    new StateStorageService()
-  ]);
-};
-
-main();
+const nodeTopology = topology();
+grpcServer.builder()
+  .onEndpoint(nodeTopology.endpoint)
+  .withService("BlockStorage", new BlockStorageService())
+  .withService("StateStorage", new StateStorageService())
+  .withManagementService(new AlwaysAliveManagementService())
+  .start();

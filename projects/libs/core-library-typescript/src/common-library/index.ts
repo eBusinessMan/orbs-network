@@ -2,6 +2,7 @@ export * from "./config";
 export * from "./logger";
 export * from "./errorHandler";
 export * from "./grpc";
+export * from "./grpc-server";
 export * from "./topology";
 export * from "./topologyPeers";
 export * from "./types";

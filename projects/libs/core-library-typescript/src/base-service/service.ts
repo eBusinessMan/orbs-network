@@ -1,6 +1,6 @@
 import bind from "bind-decorator";
 
-import { logger, config, topology, topologyPeers, grpc, types } from "../common-library";
+import { logger, config, topology, topologyPeers, types } from "../common-library";
 
 export interface RPCMethodOptions {
   log: boolean;
