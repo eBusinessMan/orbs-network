@@ -1,4 +1,4 @@
-import { ErrorHandler, grpc, ServiceRunner } from "orbs-core-library";
+import { ErrorHandler, grpc, topology, ManagementService, types, ServiceRunner } from "orbs-core-library";
 
 import ConsensusService from "./consensus-service";
 import SubscriptionManagerService from "./subscription-manager-service";
@@ -15,3 +15,11 @@ const main = async () => {
 };
 
 main();
+
+// grpc.server()
+//   .onEndpoint(nodeTopology.endpoint)
+//   .withService("Consensus", new ConsensusService())
+//   .withService("SubscriptionManager", new SubscriptionManagerService())
+//   .withService("TransactionPool", new TransactionPoolService())
+//   // .withManagementService(new ManagementService())
+//   .start();

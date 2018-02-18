@@ -2,6 +2,8 @@ import * as path from "path";
 import * as Mali from "mali";
 import * as caller from "grpc-caller";
 import { types } from "./types";
+import { addManagementService } from "./grpc-management";
+import { ManagementService } from "./management";
 
 const PROTO_PATH = path.resolve(__dirname, "../../../../architecture/interfaces");
 
@@ -30,7 +32,7 @@ function client(grpc: GRPCClient) {
   return caller(grpc.endpoint, protoPath, grpc.name);
 }
 
-function server(grpc: GRPServer) {
+function runServer(grpc: GRPServer) {
   const protoPath = path.resolve(PROTO_PATH, grpc.proto);
   const app = new Mali(protoPath, grpc.name);
   const serviceFuncs: {[key: string]: Function} = {};
@@ -60,9 +62,57 @@ function servers(grpcs: GRPServers) {
   app.start(grpcs.endpoint);
 }
 
+const protos: Map<string, string> = new Map<string, string>();
+protos.set("Consensus", "consensus.proto");
+protos.set("SubscriptionManager", "subscription-manager.proto");
+protos.set("TransactionPool", "transaction-pool.proto");
+
+export class GRPCServerBuilder {
+  endpoint: string;
+  mali: Mali;
+
+  onEndpoint(endpoint: string): GRPCServerBuilder {
+    this.endpoint = endpoint;
+
+    return this;
+  }
+
+  withService<T>(name: string, impl: T): GRPCServerBuilder {
+    const proto = protos.get(name);
+    const protoPath = path.resolve(PROTO_PATH, proto);
+
+    if (this.mali) {
+      this.mali.addService(protoPath, name);
+    } else {
+      this.mali = new Mali(protoPath, name);
+    }
+
+    const serviceFuncs: { [key: string]: { [key: string]: Function } } = {};
+    serviceFuncs[name] = {};
+
+    for (const funcName of (<any>types)[name]) {
+      serviceFuncs[name][funcName] = (<any>impl)[funcName];
+    }
+
+    this.mali.use(serviceFuncs, name);
+
+    return this;
+  }
+
+  start() {
+    this.mali.start(this.endpoint);
+    console.log(JSON.stringify(this.mali.inspect()));
+  }
+
+}
+
 export namespace grpc {
+  export function server() {
+    return new GRPCServerBuilder();
+  }
+
   export function gossipServer({ endpoint, service }: { endpoint: string, service: types.GossipServer }) {
-    server({ proto: "gossip.proto", name: "Gossip", endpoint, service });
+    runServer({ proto: "gossip.proto", name: "Gossip", endpoint, service });
   }
 
   export function gossipClient({ endpoint }: { endpoint: string }): types.GossipClient {
@@ -76,7 +126,7 @@ export namespace grpc {
   }
 
   export function blockStorageServer({ endpoint, service }: { endpoint: string, service: types.BlockStorageServer }) {
-    return server({ proto: "block-storage.proto", name: "BlockStorage", endpoint, service });
+    return runServer({ proto: "block-storage.proto", name: "BlockStorage", endpoint, service });
   }
 
   export function blockStorageClient({ endpoint }: { endpoint: string }): types.BlockStorageClient {
@@ -84,7 +134,7 @@ export namespace grpc {
   }
 
   export function stateStorageServer({ endpoint, service }: { endpoint: string, service: types.StateStorageServer }) {
-    return server({ proto: "state-storage.proto", name: "StateStorage", endpoint, service });
+    return runServer({ proto: "state-storage.proto", name: "StateStorage", endpoint, service });
   }
 
   export function stateStorageClient({ endpoint }: { endpoint: string }): types.StateStorageClient {
@@ -99,7 +149,7 @@ export namespace grpc {
   }
 
   export function consensusServer({ endpoint, service }: { endpoint: string, service: types.ConsensusServer }) {
-    server({ proto: "consensus.proto", name: "Consensus", endpoint, service });
+    runServer({ proto: "consensus.proto", name: "Consensus", endpoint, service });
   }
 
   export function consensusClient({ endpoint }: { endpoint: string }): types.ConsensusClient {
@@ -107,7 +157,7 @@ export namespace grpc {
   }
 
   export function subscriptionManagerServer({ endpoint, service }: { endpoint: string, service: types.SubscriptionManagerServer }) {
-    server({ proto: "subscription-manager.proto", name: "SubscriptionManager", endpoint, service });
+    runServer({ proto: "subscription-manager.proto", name: "SubscriptionManager", endpoint, service });
   }
 
   export function subscriptionManagerClient({ endpoint }: { endpoint: string }): types.SubscriptionManagerClient {
@@ -115,7 +165,7 @@ export namespace grpc {
   }
 
   export function transactionPoolServer({ endpoint, service }: { endpoint: string, service: types.TransactionPoolServer }) {
-    server({ proto: "transaction-pool.proto", name: "TransactionPool", endpoint, service });
+    runServer({ proto: "transaction-pool.proto", name: "TransactionPool", endpoint, service });
   }
 
   export function transactionPoolClient({ endpoint }: { endpoint: string }): types.TransactionPoolClient {
@@ -123,7 +173,7 @@ export namespace grpc {
   }
 
   export function publicApiServer({ endpoint, service }: { endpoint: string, service: types.PublicApiServer }) {
-    server({ proto: "public-api.proto", name: "PublicApi", endpoint, service });
+    runServer({ proto: "public-api.proto", name: "PublicApi", endpoint, service });
   }
 
   export function publicApiClient({ endpoint }: { endpoint: string }): types.PublicApiClient {
@@ -131,7 +181,7 @@ export namespace grpc {
   }
 
   export function virtualMachineServer({ endpoint, service }: { endpoint: string, service: types.VirtualMachineServer }) {
-    server({ proto: "virtual-machine.proto", name: "VirtualMachine", endpoint, service });
+    runServer({ proto: "virtual-machine.proto", name: "VirtualMachine", endpoint, service });
   }
 
   export function virtualMachineClient({ endpoint }: { endpoint: string }): types.VirtualMachineClient {
@@ -139,7 +189,7 @@ export namespace grpc {
   }
 
   export function sidechainConnectorServer({ endpoint, service }: { endpoint: string, service: types.SidechainConnectorServer }) {
-    server({ proto: "sidechain-connector.proto", name: "SidechainConnector", endpoint, service });
+    runServer({ proto: "sidechain-connector.proto", name: "SidechainConnector", endpoint, service });
   }
 
   export function sidechainConnectorClient({ endpoint }: { endpoint: string }): types.SidechainConnectorClient {
