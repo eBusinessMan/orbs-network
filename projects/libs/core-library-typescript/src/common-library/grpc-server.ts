@@ -2,6 +2,8 @@ import * as Mali from "mali";
 import * as path from "path";
 
 import { types } from "./types";
+import { addManagementService } from "./grpc-management";
+import { ManagementService } from "./management";
 import { Service } from "../base-service/service";
 
 const PROTO_PATH = path.resolve(__dirname, "../../../../architecture/interfaces");

@@ -2,8 +2,6 @@ import * as path from "path";
 import * as Mali from "mali";
 import * as caller from "grpc-caller";
 import { types } from "./types";
-import { addManagementService } from "./grpc-management";
-import { ManagementService } from "./management";
 
 const PROTO_PATH = path.resolve(__dirname, "../../../../architecture/interfaces");
 
@@ -60,50 +58,6 @@ function servers(grpcs: GRPServers) {
 
   app.use(serviceFuncs);
   app.start(grpcs.endpoint);
-}
-
-const protos: Map<string, string> = new Map<string, string>();
-protos.set("Consensus", "consensus.proto");
-protos.set("SubscriptionManager", "subscription-manager.proto");
-protos.set("TransactionPool", "transaction-pool.proto");
-
-export class GRPCServerBuilder {
-  endpoint: string;
-  mali: Mali;
-
-  onEndpoint(endpoint: string): GRPCServerBuilder {
-    this.endpoint = endpoint;
-
-    return this;
-  }
-
-  withService<T>(name: string, impl: T): GRPCServerBuilder {
-    const proto = protos.get(name);
-    const protoPath = path.resolve(PROTO_PATH, proto);
-
-    if (this.mali) {
-      this.mali.addService(protoPath, name);
-    } else {
-      this.mali = new Mali(protoPath, name);
-    }
-
-    const serviceFuncs: { [key: string]: { [key: string]: Function } } = {};
-    serviceFuncs[name] = {};
-
-    for (const funcName of (<any>types)[name]) {
-      serviceFuncs[name][funcName] = (<any>impl)[funcName];
-    }
-
-    this.mali.use(serviceFuncs, name);
-
-    return this;
-  }
-
-  start() {
-    this.mali.start(this.endpoint);
-    console.log(JSON.stringify(this.mali.inspect()));
-  }
-
 }
 
 export namespace grpc {
