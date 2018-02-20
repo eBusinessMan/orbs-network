@@ -7,8 +7,6 @@ import { config } from "../common-library/config";
 
 import { Gossip } from "../gossip";
 
-const NODE_NAME = config.get("NODE_NAME");
-
 // An RPC adapter to use with Gaggle's channels. We're using this adapter in order to implement the transport layer,
 // for using Gaggle's "custom" channel (which we've extended ourselves).
 class RPCConnector extends EventEmitter {
@@ -64,6 +62,7 @@ export interface RaftConsensusConfig {
   clusterSize: number;
   electionTimeout: ElectionTimeoutConfig;
   heartbeatInterval: number;
+  nodeName: string;
 }
 
 export class RaftConsensus {
@@ -79,10 +78,10 @@ export class RaftConsensus {
     this.virtualMachine = virtualMachine;
     this.blockStorage = storage;
     this.lastBlockId = -1;
-    this.connector = new RPCConnector(NODE_NAME, gossip);
+    this.connector = new RPCConnector(options.nodeName, gossip);
 
     this.node = gaggle({
-      id: NODE_NAME,
+      id: options.nodeName,
       clusterSize: options.clusterSize,
       channel: {
         name: "custom",
