@@ -17,14 +17,8 @@ export class BlockStorage {
       id: 0,
       prevBlockId: -1
     },
-    tx: {
-      version: 0,
-      contractAddress: "0",
-      sender: "",
-      signature: "",
-      payload: "{}"
-    },
-    modifiedAddressesJson: "{}"
+    transactions: [],
+    stateDiff: []
   };
 
   private lastBlock: types.Block;
@@ -96,12 +90,12 @@ export class BlockStorage {
       throw new Error(`Invalid block version: ${block.header.version}!`);
     }
 
-    if (block.header.id !== this.lastBlock.header.id + 1) {
-      throw new Error(`Invalid block ID of block: ${block}!`);
+    if (block.header.id != this.lastBlock.header.id + 1) {
+      throw new Error(`Invalid block ID of block: ${JSON.stringify(block)}!`);
     }
 
     if (block.header.prevBlockId !== this.lastBlock.header.id) {
-      throw new Error(`Invalid prev block ID of block: ${block}! Should have been ${this.lastBlock.header.id}`);
+      throw new Error(`Invalid prev block ID of block: ${JSON.stringify(block)}! Should have been ${this.lastBlock.header.id}`);
     }
   }
 
