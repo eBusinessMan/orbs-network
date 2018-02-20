@@ -59,7 +59,7 @@ export class GRPCServerBuilder {
 
     this.mali.start(this.endpoint);
 
-    return all;
+    return all.then(() => this.mali);
   }
 
 }

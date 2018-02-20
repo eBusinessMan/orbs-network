@@ -88,7 +88,7 @@ describe("simple token transfer", async function () {
 
   after(async function () {
     if (testEnvironment) {
-      await testEnvironment.stop();
+      // await testEnvironment.stop();
     }
   });
 });
