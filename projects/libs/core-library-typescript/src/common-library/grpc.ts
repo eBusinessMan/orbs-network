@@ -61,6 +61,7 @@ function servers(grpcs: GRPServers) {
 }
 
 export namespace grpc {
+
   export function gossipServer({ endpoint, service }: { endpoint: string, service: types.GossipServer }) {
     runServer({ proto: "gossip.proto", name: "Gossip", endpoint, service });
   }

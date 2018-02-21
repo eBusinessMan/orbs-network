@@ -54,6 +54,11 @@ export class GRPCServerBuilder {
     return this;
   }
 
+  withManagementService(service: ManagementService) {
+    addManagementService(this.mali, service);
+    return this;
+  }
+
   start(): Promise<any> {
     const all = Promise.all(this.services.map(s => s.start()));
 
