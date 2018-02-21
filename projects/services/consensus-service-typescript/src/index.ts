@@ -1,7 +1,7 @@
-import { ErrorHandler, config, topology } from "orbs-core-library";
-import consensusServer from "./consensus-server";
-
+import { ErrorHandler, config, topology, logger } from "orbs-core-library";
 ErrorHandler.setup();
+
+import consensusServer from "./consensus-server";
 
 const nodeTopology = topology();
 

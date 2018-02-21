@@ -1,15 +1,18 @@
-import { grpcServer, types, Config, topologyPeers, logger } from "orbs-core-library";
+import { grpcServer, types, Config, topologyPeers, logger, RaftConsensusConfig } from "orbs-core-library";
 import { Consensus, SubscriptionManager, TransactionPool } from "orbs-core-library";
 
 import ConsensusService from "./consensus-service";
 import SubscriptionManagerService from "./subscription-manager-service";
 import TransactionPoolService from "./transaction-pool-service";
 
-function makeConsensus(config: Config, peers: types.ClientMap) {
-  const consensusConfig = config.get("consensus");
+function makeConsensus(config: Config, peers: types.ClientMap, nodeName: string) {
+
+  const consensusConfig: RaftConsensusConfig = config.get("consensus");
   if (!consensusConfig) {
     throw new Error("Couldn't find consensus configuration!");
   }
+
+  consensusConfig.nodeName = nodeName;
 
   return new Consensus(consensusConfig, peers.gossip, peers.virtualMachine, peers.blockStorage);
 }
@@ -31,7 +34,7 @@ export default function(config: Config, nodeTopology: any) {
   const peers = topologyPeers(nodeTopology.peers);
 
   return grpcServer.builder()
-    .withService("Consensus", new ConsensusService(makeConsensus(config, peers), nodeConfig))
+    .withService("Consensus", new ConsensusService(makeConsensus(config, peers, nodeTopology.name), nodeConfig))
     .withService("SubscriptionManager", new SubscriptionManagerService(makeSubscriptionManager(config, peers), nodeConfig))
     .withService("TransactionPool", new TransactionPoolService(new TransactionPool(), nodeConfig));
 }
