@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as mkdirp from "mkdirp";
 import * as levelup from "levelup";
-import leveldown from "leveldown";
+// import leveldown from "leveldown";
 
 export class LevelDBDriver {
 
@@ -13,7 +13,7 @@ export class LevelDBDriver {
     mkdirp.sync(directory);
 
     // Open/create the blocks LevelDB database.
-    this.db = levelup.default(leveldown(dbPath));
+    this.db = levelup("local", {db: dbPath});
   }
 
   public get<T>(key: string): Promise<T> {

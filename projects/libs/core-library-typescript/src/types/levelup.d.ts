@@ -49,19 +49,19 @@ export interface LevelUp<K=any, V=any, O={}, PO={}, GO={}, DO={}, IO={}, BO={}, 
   /**emitted when a new value is 'put' */
   on(event: 'put', cb: (key: K, value: V) => void): this
   /**emitted when a value is deleted*/
-  on(event: 'del', cb: (key: K) => void): this
+  on(event: 'del', cb: (key: K) => void)
   /**emitted when a batch operation has executed */
-  on(event: 'batch', cb: (ary: any[]) => void): this
+  on(event: 'batch', cb: (ary: any[]) => void)
   /**emitted when the database has opened ('open' is synonym) */
-  on(event: 'ready', cb: () => void): this
+  on(event: 'ready', cb: () => void)
   /**emitted when the database has opened */
-  on(event: 'open', cb: () => void): this
+  on(event: 'open', cb: () => void)
   /** emitted when the database has closed*/
-  on(event: 'closed', cb: () => void): this
+  on(event: 'closed', cb: () => void)
   /** emitted when the database is opening */
-  on(event: 'opening', cb: () => void): this
+  on(event: 'opening', cb: () => void)
   /** emitted when the database is closing */
-  on(event: 'closing', cb: () => void): this
+  on(event: 'closing', cb: () => void)
 }
 
 interface LevelUpConstructor {
