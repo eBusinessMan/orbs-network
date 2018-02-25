@@ -18,12 +18,6 @@ export default class ConsensusService extends Service {
   async initialize() {
   }
 
-  @Service.RPCMethod
-  public async sendTransaction(rpc: types.SendTransactionContext) {
-    await this.consensus.sendTransaction(rpc.req);
-
-    rpc.res = {};
-  }
 
   @Service.SilentRPCMethod
   public async gossipMessageReceived(rpc: types.GossipMessageReceivedContext) {

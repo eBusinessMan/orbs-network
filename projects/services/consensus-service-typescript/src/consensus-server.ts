@@ -11,7 +11,7 @@ function makeConsensus(config: Config, peers: types.ClientMap) {
     throw new Error("Couldn't find consensus configuration!");
   }
 
-  return new Consensus(consensusConfig, peers.gossip, peers.virtualMachine, peers.blockStorage);
+  return new Consensus(consensusConfig, peers.gossip, peers.virtualMachine, peers.blockStorage, peers.transactionPool);
 }
 
 function makeSubscriptionManager(config: Config, peers: types.ClientMap) {
