@@ -1,10 +1,6 @@
 import * as WebSocket from "ws";
 
-import { logger } from "../common-library/logger";
-
-import { includes } from "lodash";
-import { platform, networkInterfaces } from "os";
-import { types } from "../common-library";
+import { logger, types } from "../common-library";
 
 function stringToBuffer(str: string): Buffer {
   const buf = Buffer.alloc(1 + str.length);
@@ -31,11 +27,10 @@ export class Gossip {
   readonly port: number;
   gossipPeers: string[];
 
-  constructor(input: {localAddress: string, port: number, peers: types.ClientMap, gossipPeers: string[]}) {
+  constructor(input: {localAddress: string, port: number, peers: types.ClientMap}) {
     this.port = input.port;
     this.server = new WebSocket.Server({ port: input.port });
     this.peers = input.peers;
-    this.gossipPeers = input.gossipPeers;
     this.localAddress = input.localAddress;
     this.server.on("connection", (ws) => {
       this.prepareConnection(ws);
@@ -67,6 +62,13 @@ export class Gossip {
       }
 
       const sender = readString(message);
+
+      if (this.localAddress == sender) {
+        logger.info("Connected to myself. Disconnecting");
+        ws.close();
+        return;
+      }
+
       if (offset === message.length) {
         // 'hello' message
         remoteAddress = sender;
@@ -74,6 +76,7 @@ export class Gossip {
         logger.info("Registering connection", this.localAddress, "->", sender);
         return;
       }
+
       const [recipient, broadcastGroup, objectType, objectRaw] = [readString(message), readString(message), readString(message), message.slice(offset)];
 
       if (recipient !== "" && recipient !== this.localAddress) {
