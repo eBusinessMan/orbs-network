@@ -125,6 +125,10 @@ export class Gossip {
     }
   }
 
+  shutdown() {
+    this.server.close();
+  }
+
   public activePeers() {
     return this.clients.keys();
   }
